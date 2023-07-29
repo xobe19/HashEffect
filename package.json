@@ -1,0 +1,14 @@
+{
+  "name": "hasheffect",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.ts",
+  "scripts": {
+    "dev": "ts-node index.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ts-node": "^10.9.1"
+  }
+}
