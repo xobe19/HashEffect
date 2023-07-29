@@ -58,7 +58,7 @@ function SSS(secret: string, n: number, t: number) {
   let degree = t - 1;
   let number_of_keys = n;
 
-  let P = choose_prime(number_of_keys, secret_int);
+  PRIME = choose_prime(number_of_keys, secret_int);
 
   let coefficients = generate_random_coefficients(degree - 1);
 
@@ -81,7 +81,7 @@ function getCoefficientAtZero(points: bigInt.BigInteger[][]) {
     let x_coordinate = points[i][0];
     p1 = p1.multiply(x_coordinate.multiply(-1).mod(PRIME)).mod(PRIME);
   }
-  console.log("p1" + p1);
+  // console.log("p1" + p1);
 
   let p2 = bigInt(0);
 
@@ -89,7 +89,8 @@ function getCoefficientAtZero(points: bigInt.BigInteger[][]) {
     let numerator = points[i][1];
     numerator = numerator
       .multiply(p1)
-      .multiply(points[i][0].multiply(-1).modInv(PRIME));
+      .multiply(points[i][0].multiply(-1).modInv(PRIME))
+      .mod(PRIME);
     let denominator = bigInt(1).mod(PRIME);
 
     for (let j = 0; j < points.length; j++) {
@@ -106,7 +107,7 @@ function getCoefficientAtZero(points: bigInt.BigInteger[][]) {
     p2 = p2.plus(frac).mod(PRIME);
   }
 
-  return p2.mod(PRIME);
+  return p2.mod(PRIME).plus(PRIME).mod(PRIME);
 }
 
 let yy = [
@@ -121,8 +122,33 @@ let yyyy = yy.map((e) => {
 
 console.log(getCoefficientAtZero(yyyy));
 
-function generate_secret() {}
+function integer_to_string(int_secret: bigInt.BigInteger) {
+  let hex_string = int_secret.toString(16);
+
+  let byte_array = [];
+
+  for(let i = 0; i < hex_string.length;i += 2) {
+    let byteString = hex_string[i] + hex_string[i+1];
+    byte_array.push(parseInt(byteString,16));
+  }
+
+  let string_secret = "";
+
+  for(let byte of byte_array) {
+    string_secret += String.fromCharCode(byte);
+  }
+  return string_secret;
+}
+
+function generate_secret(points: bigInt.BigInteger[][]) {
+  let integer_secret = getCoefficientAtZero(points);
+  return integer_to_string(integer_secret);
+}
 
 //console.log(string_to_integer("my secret"));
 //console.log(choose_prime(999999, string_to_integer("hi how are you")));
-console.log(SSS("hi how are you", 10, 7));
+let points = SSS("hi how are you", 10, 7);
+
+console.log(points);
+
+console.log(generate_secret(points));
