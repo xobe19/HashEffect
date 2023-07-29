@@ -25,7 +25,7 @@ function compute_pok(ai0: BigInteger, i: number) {
   let R = exponentiationInField(g, k, P);
   let y = exponentiationInField(g, ai0, P);
   let c = crypto.SHA256(
-    i.toString() + "context_string" + y.toString() + R.toString()
+    i.toString(16) + "context_string" + y.toString(16) + R.toString(16)
   );
 
   let mu = addInField(k, multiplyInField(ai0, c, P), P);
@@ -47,7 +47,8 @@ function broadcast(commitments: BigInteger[], my_signature: BigInteger[]) {
 //call this function when broadcast received on API
 function broadcastRouteCallback(
   others_commitments: BigInteger[],
-  others_signature: BigInteger[]
+  others_signature: BigInteger[],
+  other_node_id: number
 ) {
 
     let other_r = others_signature[0];
@@ -56,8 +57,12 @@ function broadcastRouteCallback(
     let LHS = other_r;
 
     let RHS = exponentiationInField(g, other_mu, P);
-    RHS = multiplyInField(RHS, )
+    let cl = crypto.SHA256()
+    RHS = multiplyInField(RHS, exponentiationInField(others_commitments[0],-cl, P), P);
 }
+
+
+
 
 function main() {
   let coefficients = generate_random_polynomial(T);

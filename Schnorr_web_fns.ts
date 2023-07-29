@@ -1,5 +1,5 @@
 import bigInt from "big-integer";
-const crypto = require("crypto-js");
+import crypto from "crypto-js";
 
 import {
   exponentiationInField,
@@ -28,21 +28,21 @@ function sign(
   P: bigInt.BigInteger,
   y: bigInt.BigInteger
 ) {
-
-let k = pickNumber(bigInt(1), Q.minus(1), Q);
-let R = exponentiationInField(g, k, P);
-  let c = crypto.SHA256(R.toString(2) + y.toString(2) + str_to_bin(message));
-  c = bigInt(c, 16);
+  let k = pickNumber(bigInt(1), Q.minus(1), Q);
+  let R = exponentiationInField(g, k, P);
+  let c_hex = crypto
+    .SHA256(R.toString(2) + y.toString(2) + str_to_hex(message))
+    .toString();
+  let c = bigInt(c_hex, 16);
   let z = k.plus(multiplyInField(x, c, P)).mod(P);
 
   let signature = [R, z];
 
-  console.log(verify(y,z,R,P, g,Q, message))
+  console.log(verify(y, z, R, P, g, Q, message));
   return signature;
-
 }
 
-function str_to_bin(str: string) {
+function str_to_hex(str: string) {
   let bytes = [];
   for (let i = 0; i < str.length; i++) {
     let byte: number = str.charCodeAt(i);
@@ -52,14 +52,11 @@ function str_to_bin(str: string) {
 
   for (let i = 0; i < bytes.length; i++) {
     let byte = bytes[i];
-    let bin = byte.toString();
+    let bin = byte.toString(16);
     bin_string += bin;
   }
   return bin_string;
 }
-
-
-
 
 export default function verify(
   y: bigInt.BigInteger,
@@ -70,11 +67,23 @@ export default function verify(
   Q: bigInt.BigInteger,
   message: string
 ): boolean {
-  let c = crypto.SHA256(r.toString(2) + y.toString(2) + str_to_bin(message));
-  c = bigInt(c, 16);
+  console.log(r, y, message);
+  let hex_data = crypto.enc.Hex.parse(
+    r.toString(16) + y.toString(16) + str_to_hex(message)
+  );
+
+  console.log(hex_data.toString());
+
+  let c_hex = crypto.SHA256(hex_data).toString();
+  console.log(c_hex);
+
+  let c = bigInt(c_hex, 16).mod(Q);
+
   const rd = exponentiationInField(g, s, P);
 
-  const rdd = rd.multiply(exponentiationInField(y, c.multiply(-1), P)).mod(P);
+  const rdd = rd
+    .multiply(exponentiationInField(y, c.multiply(-1).mod(Q), P))
+    .mod(P);
 
   console.log("rdd : " + rdd);
   console.log("r   : " + r);
@@ -92,8 +101,8 @@ function getPublicAndPrivate(
   const y = exponentiationInField(g, x, P);
   // ? public key
 
-  const [s, e] = sign("hi", x, Q, g, P);
-  verify(y, e, s, P, g, Q, "hi");
+  //  const [s, e] = sign("hi", x, Q, g, P);
+  // verify(y, e, s, P, g, Q, "hi");
 
   console.log("public key: " + y);
 }
