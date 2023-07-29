@@ -12,6 +12,7 @@ const g = bigInt("2");
 let t = 2;
 let n = 3;
 let all_commitments: BigInteger[][] = new Array(n + 1).fill([]);
+let preprocess_storage: BigInteger[][][] = new Array(n + 1).fill([]);
 function generate_random_polynomial(t: number) {
   let coefficients = [];
   for (let i = 0; i < t; i++) {
@@ -246,6 +247,17 @@ class Node {
 
     console.log(`Public key of ${l} is ${overall}`);
   }
+
+  preprocess(pi: number) {
+    let li: BigInteger[][] = [];
+    for (let i = 0; i < pi; i++) {
+      let di = bigInt.randBetween(1, Q.minus(1));
+      let Di = exponentiationInField(g, di, P);
+      li.push([di, Di]);
+    }
+
+    preprocess_storage[this.id] = li;
+  }
 }
 
 function sleep(ms: number) {
@@ -280,4 +292,17 @@ var all_nodes: Node[] = [new Node(1), new Node(2), new Node(3)];
   await sleep(4000);
 
   all_nodes[0].compute_public_key_of(2);
+
+  await sleep(4000);
+
+  for (let node of all_nodes) {
+    node.preprocess(2);
+  }
+  await sleep(4000);
+
+  console.log(`Preprocessed Storage: `);
+
+  for (let i = 1; i <= n; i++) {
+    console.log(`Node ${i} preprocessed : ` + preprocess_storage[i]);
+  }
 })();
