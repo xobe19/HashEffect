@@ -102,9 +102,9 @@ function generateCommitments(
   return postData;
 }
 
-function verifyWithAPI() {
+function verifyWithAPI(type: string) {
   axios
-    .get<VSSResponse>("http://hash-effect.onrender.com/vss/share/invalid")
+    .get<VSSResponse>(`http://hash-effect.onrender.com/vss/share/${type}`)
     .then((resp) => resp.data)
     .then((input) => {
       const result = verifyShare(input);
@@ -127,19 +127,23 @@ function verifyWithAPI() {
     .catch((err: AxiosError) => console.error(err.toJSON()));
 }
 
-//verifyWithAPI();
+function verifyGeneratedCommitments() {
+  const toSend = generateCommitments(
+    "hey",
+    10,
+    7,
+    bigInt("15943542169520389343"),
+    bigInt("7971771084760194671"),
+    bigInt(2)
+  );
 
-const toSend = generateCommitments(
-  "hey",
-  10,
-  7,
-  bigInt("15943542169520389343"),
-  bigInt("7971771084760194671"),
-  bigInt(2)
-);
+  axios
+    .post("https://hash-effect.onrender.com/vss/verify", toSend)
+    .then((resp) => resp.data)
+    .then((output) => console.log(output))
+    .catch((err: AxiosError) => console.log(err.response?.data));
+}
 
-axios
-  .post("https://hash-effect.onrender.com/vss/verify", toSend)
-  .then((resp) => resp.data)
-  .then((output) => console.log(output))
-  .catch((err: AxiosError) => console.log(err.response?.data));
+verifyWithAPI("valid");
+// verifyWithAPI("invalid");
+// verifyGeneratedCommitments();
