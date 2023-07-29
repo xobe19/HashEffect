@@ -61,7 +61,7 @@ function verifyShare(input: VSSResponse) {
 
 function verifyWithAPI() {
   axios
-    .get<VSSResponse>("http://hash-effect.onrender.com/vss/share/valid")
+    .get<VSSResponse>("http://hash-effect.onrender.com/vss/share/invalid")
     .then((resp) => resp.data)
     .then((input) => {
       const result = verifyShare(input);
@@ -73,13 +73,13 @@ function verifyWithAPI() {
         team_message: "You have been Pwned",
       };
 
-      // axios
-      //   .post("https://hash-effect.onrender.com/vss/share/invalid", postData)
-      //   .then((resp) => resp.data)
-      //   .then((output) => {
-      //     console.log(output);
-      //   })
-      //   .catch((err: AxiosError) => console.error(err.response?.data));
+      axios
+        .post("https://hash-effect.onrender.com/vss/verify", postData)
+        .then((resp) => resp.data)
+        .then((output) => {
+          console.log(output);
+        })
+        .catch((err: AxiosError) => console.error(err.response?.data));
     })
     .catch((err: AxiosError) => console.error(err.toJSON()));
 }
