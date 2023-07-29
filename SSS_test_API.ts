@@ -1,6 +1,6 @@
 import axios, { AxiosError } from "axios";
 import bigInt, { BigInteger } from "big-integer";
-import { SSS, generate_secret } from "./SSS_web";
+import { SSS, generate_secret } from "./SSS_web_fns";
 
 interface Share {
   index: number;
