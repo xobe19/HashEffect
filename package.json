@@ -11,6 +11,10 @@
   "dependencies": {
     "big-integer": "^1.6.51",
     "crypto-js": "^4.1.1",
+    "readline-sync": "^1.4.10",
     "ts-node": "^10.9.1"
+  },
+  "devDependencies": {
+    "@types/readline-sync": "^1.4.4"
   }
 }
