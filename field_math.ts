@@ -106,3 +106,9 @@ while (true) {
 
 console.log("field set: ", field_of_generator);
 console.log("order: " + field_of_generator.size);
+
+let pow = bigInt(
+  readline.question("Enter a value x to calculate g^x in this group")
+);
+
+console.log(getFieldValue(exponentiationInField(g, pow)));
