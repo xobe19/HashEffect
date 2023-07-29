@@ -10,61 +10,6 @@ const P = bigInt("15943542169520389343");
 const Q = bigInt("7971771084760194671");
 const g = bigInt(2);
 
-function generateRandomPrime(
-  min: bigInt.BigInteger,
-  max: bigInt.BigInteger
-): bigInt.BigInteger {
-  if (min.compare(max) >= 0) {
-    throw new Error("Invalid range. Max must be greater than Min.");
-  }
-
-  let randomNum;
-  do {
-    randomNum = bigInt.randBetween(min, max);
-  } while (!randomNum.isProbablePrime());
-
-  return randomNum;
-}
-
-function getPrimeFactorOfPMinus1(
-  p: bigInt.BigInteger
-): bigInt.BigInteger | null {
-  const pMinus1 = p.subtract(1);
-  if (pMinus1.isEven()) {
-    return bigInt(2);
-  }
-  let i = bigInt(3);
-  const sqrtPMinus1 = bigInt(pMinus1).square();
-  while (i.compare(sqrtPMinus1) <= 0) {
-    if (pMinus1.mod(i).equals(0)) {
-      return i;
-    }
-    i = i.add(2);
-  }
-
-  return null;
-}
-
-function chooseAlpha(p: bigInt.BigInteger, q: bigInt.BigInteger | null) {
-  if (!p.isPrime()) {
-    throw new Error("p must be a prime number.");
-  }
-
-  if (!q || !q.isPositive() || q.compare(p) >= 0) {
-    throw new Error("q must be a positive integer smaller than p.");
-  }
-
-  let alpha = bigInt(2);
-  const one = bigInt(1);
-
-  while (alpha.compare(p) < 0) {
-    if (alpha.modPow(q, p).equals(one)) {
-      return bigInt(alpha);
-    }
-    alpha = alpha.add(1);
-  }
-}
-
 function pickNumber(min: bigInt.BigInteger, max: bigInt.BigInteger) {
   while (true) {
     let pick = bigInt.randBetween(min, max);
