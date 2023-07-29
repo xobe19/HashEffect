@@ -9,6 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "big-integer": "^1.6.51",
+    "crypto-js": "^4.1.1",
     "ts-node": "^10.9.1"
   }
 }
