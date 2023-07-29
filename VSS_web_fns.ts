@@ -31,10 +31,18 @@ function choose_prime(n: number, secret_int: BigInteger) {
 function generate_random_coefficients(n: number, Q: BigInteger): BigInteger[] {
   let coefficients = [];
   for (let i = 0; i < n; i++) {
-    let curr_coefficient = bigInt.randBetween(1, Q.minus(1));
+    let curr_coefficient = bigInt.randBetween(1, Q.minus(500));
     coefficients.push(curr_coefficient);
   }
   // console.log("coef len", coefficients.length);
+  return [
+    bigInt(2924249240046202570),
+    bigInt(2668860656384835929),
+    bigInt(4369333720324846808),
+    bigInt(966001891899960863),
+    bigInt(3271622325866942934),
+    bigInt(4467528665239889305),
+  ];
   return coefficients;
 }
 
@@ -56,7 +64,7 @@ function evaluate_polynomial(
   return answer.mod(Q);
 }
 
-function VSS(
+export function VSS(
   secret: string,
   n: number,
   t: number,
@@ -90,7 +98,7 @@ function VSS(
   let commitments = [];
 
   // looping through coefficients to generate commitment for each coefficient
-  console.log("coefficient: " + coefficients);
+  // console.log("coefficient: " + coefficients);
   for (let i = 0; i < coefficients.length; i++) {
     commitments.push(exponentiationInField(g, coefficients[i], P));
   }

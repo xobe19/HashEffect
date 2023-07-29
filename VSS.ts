@@ -92,7 +92,7 @@ function VSS(secret: string, n: number, t: number) {
   let commitments = [];
 
   // looping through coefficients to generate commitment for each coefficient
-  console.log("coefficient: " + coefficients);
+  // console.log("coefficient: " + coefficients);
   for (let i = 0; i < coefficients.length; i++) {
     commitments.push(exponentiationInField(g, coefficients[i], P));
   }

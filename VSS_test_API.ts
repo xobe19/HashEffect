@@ -1,6 +1,6 @@
 import axios, { AxiosError } from "axios";
 import bigInt, { BigInteger } from "big-integer";
-import { verify_share } from "./VSS_web_fns";
+import { VSS, verify_share } from "./VSS_web_fns";
 
 interface Share {
   index: number;
@@ -59,6 +59,49 @@ function verifyShare(input: VSSResponse) {
   return verify_share(share, commitments, p, q, g);
 }
 
+function generateCommitments(
+  secret: string,
+  n: number,
+  t: number,
+  P: BigInteger,
+  Q: BigInteger,
+  g: BigInteger
+) {
+  const { commitments, shared_secrets } = VSS(secret, n, t, P, Q, g);
+  const postData: VSSBody = {
+    share: {
+      index: 1,
+      value: {
+        value: shared_secrets[0][1].toString(16),
+        prime: Q.toString(16),
+      },
+    },
+    commitments: commitments
+      .map((commitment) => {
+        return {
+          tag: "prime",
+          data: {
+            value: commitment.toString(16),
+            prime: P.toString(16),
+          },
+        };
+      })
+      .reverse(),
+    group: {
+      generator: {
+        tag: "prime",
+        data: {
+          value: "2",
+          prime: P.toString(16),
+        },
+      },
+      p: Q.toString(16),
+    },
+    team_message: "You have been Pwned",
+  };
+  return postData;
+}
+
 function verifyWithAPI() {
   axios
     .get<VSSResponse>("http://hash-effect.onrender.com/vss/share/invalid")
@@ -85,3 +128,18 @@ function verifyWithAPI() {
 }
 
 verifyWithAPI();
+
+// const toSend = generateCommitments(
+//   "hey",
+//   10,
+//   7,
+//   bigInt("15165663843367739627"),
+//   bigInt("7582831921683869813"),
+//   bigInt(2)
+// );
+
+// axios
+//   .post("https://hash-effect.onrender.com/vss/verify", toSend)
+//   .then((resp) => resp.data)
+//   .then((output) => console.log(output))
+//   .catch((err: AxiosError) => console.log(err.response?.data));
