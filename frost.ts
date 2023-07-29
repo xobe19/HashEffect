@@ -67,6 +67,9 @@ class Node {
   public ci: BigInteger = bigInt(0);
   public public_commitments: BigInteger[] = [];
   public secret_shares: BigInteger[][] = [];
+  public signing_share: BigInteger = bigInt(0);
+  public public_verification_share: BigInteger = bigInt(0);
+  public group_public_key: BigInteger = bigInt(0);
 
   constructor(id: number) {
     this.id = id;
@@ -188,20 +191,68 @@ class Node {
     }
     if (LHS.equals(RHS)) {
       console.log(`${this.id} verified the secret sent by ${l} `);
+      this.secret_shares.push(share);
     } else {
       console.log(`${this.id} not verified the secret sent by ${l} `);
     }
   }
+
+  calculate_signing_share() {
+    for (let i = 0; i < this.secret_shares.length; i++) {
+      this.signing_share = this.signing_share.plus(this.secret_shares[i][1]);
+    }
+    console.log(
+      `Node ${this.id} calculated it's signing share as: ${this.signing_share}`
+    );
+
+    this.public_verification_share = exponentiationInField(
+      g,
+      this.signing_share,
+      P
+    );
+    console.log(
+      `Node ${this.id} calculated it's public verification share as: ${this.public_verification_share}`
+    );
+  }
+
+  compute_overall_public_key() {
+    let ACC = bigInt(1);
+    for (let j = 1; j <= n; j++) {
+      ACC = ACC.multiply(all_commitments[j][0]).mod(P);
+    }
+    this.group_public_key = ACC;
+    console.log(
+      `Node ${this.id} computed the overall public key as ${this.group_public_key}`
+    );
+  }
+}
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 var all_nodes: Node[] = [new Node(1), new Node(2), new Node(3)];
 
-for (let node of all_nodes) {
-  node.startRound1();
-}
+(async function () {
+  for (let node of all_nodes) {
+    node.startRound1();
+  }
 
-setTimeout(() => {
+  await sleep(4000);
+
+  //  console.log(all_commitments);
   for (let node of all_nodes) {
     node.startRound2();
   }
-}, 7000);
+
+  await sleep(4000);
+
+  for (let node of all_nodes) {
+    node.calculate_signing_share();
+  }
+  await sleep(4000);
+
+  for (let node of all_nodes) {
+    node.compute_overall_public_key();
+  }
+})();
