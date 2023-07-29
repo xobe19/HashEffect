@@ -49,6 +49,13 @@ interface GetSchnorrRes {
   };
 }
 
+interface SchnorrVerificationBody {
+  group: Group;
+  message: string;
+  publicKey: PublicKey;
+  signature: GetSignature;
+}
+
 function verifyWithAPI() {
   axios
     .get<GetSchnorrRes>("https://hash-effect.onrender.com/schnorr/sign")
@@ -68,6 +75,21 @@ function verifyWithAPI() {
       const message = input.message;
       const a = verify(y, s, r, P, g, Q, message, hash);
       console.log(a);
+
+      const postData: SchnorrVerificationBody = {
+        group: input.group,
+        message: input.message,
+        publicKey: input.publicKey,
+        signature: input.signature,
+      };
+
+      axios
+        .post<SchnorrVerificationBody>(
+          "https://hash-effect.onrender.com/schnorr/verify",
+          postData
+        )
+        .then((resp) => resp.data)
+        .then((output) => console.log(output));
     });
 }
 
