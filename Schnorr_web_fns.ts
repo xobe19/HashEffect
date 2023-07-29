@@ -25,25 +25,41 @@ function sign(
   x: bigInt.BigInteger,
   Q: bigInt.BigInteger,
   g: bigInt.BigInteger,
-  P: bigInt.BigInteger
+  P: bigInt.BigInteger,
+  y: bigInt.BigInteger
 ) {
-  const k = pickNumber(bigInt(1), Q.minus(bigInt(1)), Q);
-  console.log("k: " + k);
 
-  console.log("Q: " + Q);
-  const r = exponentiationInField(g, k, P);
-  const toHash = r.toString(2) + message;
-  const e = crypto.SHA256(toHash); // ? hash
-  const HASH = e.toString();
-  const HASH_AS_INT = bigInt(HASH, 16);
-  console.log("HASHASINT : " + HASH_AS_INT);
-  const xe = multiplyInField(x, HASH_AS_INT, Q);
+let k = pickNumber(bigInt(1), Q.minus(1), Q);
+let R = exponentiationInField(g, k, P);
+  let c = crypto.SHA256(R.toString(2) + y.toString(2) + str_to_bin(message));
+  c = bigInt(c, 16);
+  let z = k.plus(multiplyInField(x, c, P)).mod(P);
 
-  const s = subtractInField(k, xe, Q);
+  let signature = [R, z];
 
-  console.log("sign : " + [s, e]);
-  return [s, HASH_AS_INT];
+  console.log(verify(y,z,R,P, g,Q, message))
+  return signature;
+
 }
+
+function str_to_bin(str: string) {
+  let bytes = [];
+  for (let i = 0; i < str.length; i++) {
+    let byte: number = str.charCodeAt(i);
+    bytes.push(byte);
+  }
+  let bin_string = "";
+
+  for (let i = 0; i < bytes.length; i++) {
+    let byte = bytes[i];
+    let bin = byte.toString();
+    bin_string += bin;
+  }
+  return bin_string;
+}
+
+
+
 
 export default function verify(
   y: bigInt.BigInteger,
@@ -54,7 +70,7 @@ export default function verify(
   Q: bigInt.BigInteger,
   message: string
 ): boolean {
-  let c = crypto.SHA256(message + r.toString(16) + y.toString(16));
+  let c = crypto.SHA256(r.toString(2) + y.toString(2) + str_to_bin(message));
   c = bigInt(c, 16);
   const rd = exponentiationInField(g, s, P);
 
