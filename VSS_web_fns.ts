@@ -30,19 +30,15 @@ function choose_prime(n: number, secret_int: BigInteger) {
 
 function generate_random_coefficients(n: number, Q: BigInteger): BigInteger[] {
   let coefficients = [];
+  let j = 100;
+  let a = 2;
   for (let i = 0; i < n; i++) {
-    let curr_coefficient = bigInt.randBetween(1, Q.minus(500));
-    coefficients.push(curr_coefficient);
+    coefficients.push(exponentiationInField(bigInt(a), bigInt(j), Q).plus(1));
+    j = j + 1;
   }
-  // console.log("coef len", coefficients.length);
-  return [
-    bigInt(2924249240046202570),
-    bigInt(2668860656384835929),
-    bigInt(4369333720324846808),
-    bigInt(966001891899960863),
-    bigInt(3271622325866942934),
-    bigInt(4467528665239889305),
-  ];
+  console.log(coefficients);
+  console.log("coef len", coefficients.length);
+
   return coefficients;
 }
 

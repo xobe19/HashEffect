@@ -127,19 +127,19 @@ function verifyWithAPI() {
     .catch((err: AxiosError) => console.error(err.toJSON()));
 }
 
-verifyWithAPI();
+//verifyWithAPI();
 
-// const toSend = generateCommitments(
-//   "hey",
-//   10,
-//   7,
-//   bigInt("15165663843367739627"),
-//   bigInt("7582831921683869813"),
-//   bigInt(2)
-// );
+const toSend = generateCommitments(
+  "hey",
+  10,
+  7,
+  bigInt("15943542169520389343"),
+  bigInt("7971771084760194671"),
+  bigInt(2)
+);
 
-// axios
-//   .post("https://hash-effect.onrender.com/vss/verify", toSend)
-//   .then((resp) => resp.data)
-//   .then((output) => console.log(output))
-//   .catch((err: AxiosError) => console.log(err.response?.data));
+axios
+  .post("https://hash-effect.onrender.com/vss/verify", toSend)
+  .then((resp) => resp.data)
+  .then((output) => console.log(output))
+  .catch((err: AxiosError) => console.log(err.response?.data));
