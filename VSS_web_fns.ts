@@ -66,10 +66,10 @@ function VSS(
 ) {
   let secret_int = string_to_integer(secret);
 
-  console.log();
-  console.log(`Secret as`, secret_int);
-  console.log(`Secret as Hex { value: 0x${secret_int.toString(16)} }`);
-  console.log();
+  // console.log();
+  // console.log(`Secret as`, secret_int);
+  // console.log(`Secret as Hex { value: 0x${secret_int.toString(16)} }`);
+  // console.log();
 
   let degree = t - 1;
   let number_of_keys = n;
@@ -174,10 +174,10 @@ export function verify_share(
   for (let j = commitments.length - 1; j >= 0; j--) {
     let term = exponentiationInField(commitments[j], pow, P);
 
-    console.log("pow: " + pow);
-    console.log("j = " + j);
-    console.log("commitment: " + commitments[j]);
-    console.log("term: " + term);
+    // console.log("pow: " + pow);
+    // console.log("j = " + j);
+    // console.log("commitment: " + commitments[j]);
+    // console.log("term: " + term);
     LHS = multiplyInField(LHS, term, P);
     pow = pow.multiply(i);
   }

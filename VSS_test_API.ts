@@ -64,6 +64,76 @@ function verifyWithAPI() {
     .get<VSSResponse>("https://hash-effect.onrender.com/vss/share")
     .then((resp) => resp.data)
     .then((input) => {
+      input = {
+        share: {
+          index: 1,
+          value: {
+            value: "69f781c048e88491",
+            prime: "6cfb0057f6deb517",
+          },
+        },
+        commitments: [
+          {
+            tag: "prime",
+            data: {
+              value: "d60324888291b338",
+              prime: "d9f600afedbd6a2f",
+            },
+          },
+          {
+            tag: "prime",
+            data: {
+              value: "755b27bc4ab12b66",
+              prime: "d9f600afedbd6a2f",
+            },
+          },
+          {
+            tag: "prime",
+            data: {
+              value: "cbd3d890e3602683",
+              prime: "d9f600afedbd6a2f",
+            },
+          },
+          {
+            tag: "prime",
+            data: {
+              value: "d35605f6ea9da890",
+              prime: "d9f600afedbd6a2f",
+            },
+          },
+          {
+            tag: "prime",
+            data: {
+              value: "6c8dcdfa4e73df7d",
+              prime: "d9f600afedbd6a2f",
+            },
+          },
+          {
+            tag: "prime",
+            data: {
+              value: "9907ceaed3e7f45c",
+              prime: "d9f600afedbd6a2f",
+            },
+          },
+          {
+            tag: "prime",
+            data: {
+              value: "70d6baa2338f361b",
+              prime: "d9f600afedbd6a2f",
+            },
+          },
+        ],
+        group: {
+          generator: {
+            tag: "prime",
+            data: {
+              value: "2",
+              prime: "d9f600afedbd6a2f",
+            },
+          },
+          p: "6cfb0057f6deb517",
+        },
+      };
       const result = verifyShare(input);
       console.log(result);
       const postData: VSSBody = {
@@ -79,7 +149,7 @@ function verifyWithAPI() {
         .then((output) => {
           console.log(output);
         })
-        .catch((err: AxiosError) => console.error(err.toJSON()));
+        .catch((err: AxiosError) => console.error(err.response?.data));
     })
     .catch((err: AxiosError) => console.error(err.toJSON()));
 }
