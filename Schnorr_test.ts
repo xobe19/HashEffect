@@ -43,6 +43,10 @@ interface GetSchnorrRes {
   message: string;
   publicKey: PublicKey;
   signature: GetSignature;
+  hash: {
+    value: string;
+    prime: string;
+  };
 }
 
 function verifyWithAPI() {
@@ -58,9 +62,11 @@ function verifyWithAPI() {
       const y = bigInt(input.publicKey.data.value, 16);
       const s = bigInt(input.signature.sigma.value, 16);
       const r = bigInt(input.signature.r.data.value, 16);
+
+      const hash = bigInt(input.hash.value, 16);
       console.log(P);
       const message = input.message;
-      const a = verify(y, s, r, P, g, Q, message);
+      const a = verify(y, s, r, P, g, Q, message, hash);
       console.log(a);
     });
 }

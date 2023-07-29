@@ -38,7 +38,7 @@ function sign(
 
   let signature = [R, z];
 
-  console.log(verify(y, z, R, P, g, Q, message));
+  // console.log(verify(y, z, R, P, g, Q, message));
   return signature;
 }
 
@@ -65,7 +65,8 @@ export default function verify(
   P: bigInt.BigInteger,
   g: bigInt.BigInteger,
   Q: bigInt.BigInteger,
-  message: string
+  message: string,
+  hash: bigInt.BigInteger
 ): boolean {
   console.log(r, y, message);
   let hex_data = crypto.enc.Hex.parse(
@@ -78,7 +79,8 @@ export default function verify(
   console.log(c_hex);
 
   let c = bigInt(c_hex, 16).mod(Q);
-
+  // ? using thier hash
+  c = hash;
   const rd = exponentiationInField(g, s, P);
 
   const rdd = rd
