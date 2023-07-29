@@ -2,10 +2,12 @@ import bigInt, { BigInteger } from "big-integer";
 import readline from "readline-sync";
 import { exponentiationInField, multiplyInField } from "./field_math_exports";
 
-let PRIME: BigInteger = bigInt(2).pow(127).minus(1);
-let OUT_PRIME: BigInteger = bigInt(2).pow(1024).minus(1);
-console.log(OUT_PRIME.isPrime());
-console.log(PRIME.isPrime());
+//let PRIME: BigInteger = bigInt(2).pow(127).minus(1);
+//let OUT_PRIME: BigInteger = bigInt(2).pow(1024).minus(1);
+const Q = bigInt("7582831921683869813");
+const P = bigInt("15165663843367739627");
+console.log(Q.isPrime());
+console.log(P.isPrime());
 
 let g: BigInteger = bigInt(2);
 const SECRET = readline.question("Enter secret: ");
@@ -41,7 +43,7 @@ function choose_prime(n: number, secret_int: BigInteger) {
 function generate_random_coefficients(n: number): BigInteger[] {
   let coefficients = [];
   for (let i = 0; i < n; i++) {
-    let curr_coefficient = bigInt.randBetween(1, PRIME.minus(1));
+    let curr_coefficient = bigInt.randBetween(1, Q.minus(1));
     coefficients.push(curr_coefficient);
   }
   // console.log("coef len", coefficients.length);
@@ -53,13 +55,13 @@ function evaluate_polynomial(coefficients: BigInteger[], x: number) {
   let acc = bigInt(1);
   for (let i = coefficients.length - 1; i >= 0; i--) {
     let term = acc.multiply(coefficients[i]);
-    term = term.mod(PRIME);
+    term = term.mod(Q);
     answer = answer.plus(term);
-    answer = answer.mod(PRIME);
+    answer = answer.mod(Q);
     acc = acc.multiply(bigInt(x));
-    acc = acc.mod(PRIME);
+    acc = acc.mod(Q);
   }
-  return answer.mod(PRIME);
+  return answer.mod(Q);
 }
 
 function VSS(secret: string, n: number, t: number) {
@@ -73,8 +75,7 @@ function VSS(secret: string, n: number, t: number) {
   let degree = t - 1;
   let number_of_keys = n;
 
-  PRIME = choose_prime(number_of_keys, secret_int);
-  console.log("chosen prime: " + PRIME.toString());
+  //PRIME = choose_prime(number_of_keys, secret_int);
 
   let coefficients = generate_random_coefficients(degree);
 
@@ -93,7 +94,7 @@ function VSS(secret: string, n: number, t: number) {
   // looping through coefficients to generate commitment for each coefficient
   console.log("coefficient: " + coefficients);
   for (let i = 0; i < coefficients.length; i++) {
-    commitments.push(exponentiationInField(g, coefficients[i], PRIME));
+    commitments.push(exponentiationInField(g, coefficients[i], P));
   }
 
   return { shared_secrets, commitments };
@@ -103,7 +104,7 @@ function get_coefficient_at_zero(points: BigInteger[][]) {
   let p1 = bigInt(1);
   for (let i = 0; i < points.length; i++) {
     let x_coordinate = points[i][0];
-    p1 = p1.multiply(x_coordinate.multiply(-1).mod(PRIME)).mod(PRIME);
+    p1 = p1.multiply(x_coordinate.multiply(-1).mod(Q)).mod(Q);
   }
   // console.log("p1" + p1);
 
@@ -113,25 +114,23 @@ function get_coefficient_at_zero(points: BigInteger[][]) {
     let numerator = points[i][1];
     numerator = numerator
       .multiply(p1)
-      .multiply(points[i][0].multiply(-1).modInv(PRIME))
-      .mod(PRIME);
-    let denominator = bigInt(1).mod(PRIME);
+      .multiply(points[i][0].multiply(-1).modInv(Q))
+      .mod(Q);
+    let denominator = bigInt(1).mod(Q);
 
     for (let j = 0; j < points.length; j++) {
       if (i == j) continue;
       let front = points[i][0];
       let back = points[j][0];
-      denominator = denominator
-        .multiply(front.minus(back).mod(PRIME))
-        .mod(PRIME);
+      denominator = denominator.multiply(front.minus(back).mod(Q)).mod(Q);
     }
 
-    let frac = numerator.multiply(denominator.modInv(PRIME)).mod(PRIME);
+    let frac = numerator.multiply(denominator.modInv(Q)).mod(Q);
     // console.log("frac " + frac);
-    p2 = p2.plus(frac).mod(PRIME);
+    p2 = p2.plus(frac).mod(Q);
   }
 
-  return p2.mod(PRIME).plus(PRIME).mod(PRIME);
+  return p2.mod(Q).plus(Q).mod(Q);
 }
 
 function hex_string_to_byte_array(hex: string) {
@@ -170,19 +169,19 @@ function verify_share(share: BigInteger[], commitments: BigInteger[]) {
   let pow = bigInt(1);
 
   for (let j = commitments.length - 1; j >= 0; j--) {
-    let term = exponentiationInField(commitments[j], pow, PRIME);
+    let term = exponentiationInField(commitments[j], pow, P);
 
     console.log("pow: " + pow);
     console.log("j = " + j);
     console.log("commitment: " + commitments[j]);
     console.log("term: " + term);
-    LHS = multiplyInField(LHS, term, PRIME);
-    pow = multiplyInField(pow, i, PRIME);
+    LHS = multiplyInField(LHS, term, P);
+    pow = pow.multiply(i);
   }
 
   console.log("LHS: " + LHS);
 
-  let RHS = exponentiationInField(g, fi, PRIME);
+  let RHS = exponentiationInField(g, fi, P);
 
   console.log("RHS: " + RHS);
 }
