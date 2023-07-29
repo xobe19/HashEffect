@@ -57,24 +57,17 @@ function evaluate_polynomial(
   return answer.mod(prime);
 }
 
-function SSS(secret: string, n: number, t: number) {
-  let secret_int = string_to_integer(secret);
-
-  console.log();
-  console.log(`Secret as`, secret_int);
-  console.log(`Secret as Hex { value: 0x${secret_int.toString(16)} }`);
-  console.log();
-
+export function SSS(secret: BigInteger, n: number, t: number) {
   let degree = t - 1;
   let number_of_keys = n;
 
-  const prime = choose_prime(number_of_keys, secret_int);
+  const prime = choose_prime(number_of_keys, secret);
 
   let coefficients = generate_random_coefficients(degree, prime);
 
   // pushing the secret as the coefficient of 0th degree term
 
-  coefficients.push(secret_int);
+  coefficients.push(secret);
 
   let shared_secrets = [];
   for (let i = 1; i <= n; i++) {
@@ -82,7 +75,7 @@ function SSS(secret: string, n: number, t: number) {
     shared_secrets.push([bigInt(i), fi]);
   }
 
-  return shared_secrets;
+  return { shares: shared_secrets, prime: prime };
 }
 
 function get_coefficient_at_zero(points: BigInteger[][], prime: BigInteger) {
