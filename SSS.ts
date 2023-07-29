@@ -1,9 +1,10 @@
 import bigInt, { BigInteger } from "big-integer";
+import readline from "readline-sync";
 
 let PRIME: BigInteger = bigInt(2).pow(127).minus(1);
-const SECRET = "hiii, catalog.fi rocks";
-const SHARES = 10;
-const THRESHOLD = 7;
+const SECRET = readline.question("Enter secret: ");
+const SHARES = readline.questionInt("Enter no. of shares: ");
+const THRESHOLD = readline.questionInt("Enter threshold: ");
 
 function string_to_bytes(str: string): number[] {
   let byte_array = [];
@@ -58,7 +59,11 @@ function evaluate_polynomial(coefficients: BigInteger[], x: number) {
 function SSS(secret: string, n: number, t: number) {
   let secret_int = string_to_integer(secret);
 
-  // console.log(secret_int);
+  console.log();
+  console.log(`Secret as`, secret_int);
+  console.log(`Secret as Hex { value: 0x${secret_int.toString(16)} }`);
+  console.log();
+
   let degree = t - 1;
   let number_of_keys = n;
 
@@ -146,10 +151,6 @@ function generate_secret(points: BigInteger[][]) {
 //console.log(string_to_integer("my secret"));
 //console.log(choose_prime(999999, string_to_integer("hi how are you")));
 
-console.log(`Secret: ${SECRET}`);
-console.log(`No of shares: ${SHARES}`);
-console.log(`Threshold: ${THRESHOLD}`);
-
 let points = SSS(SECRET, SHARES, THRESHOLD);
 console.log("Shares:");
 for (let point of points) {
@@ -167,5 +168,8 @@ for (let i = SHARES; i >= 1; i--) {
     );
     logged = true;
   }
-  console.log(`Recovered secret with ${i} shares: ${recoveredSecret}`);
+  console.log(
+    `Recovered secret with ${i} shares: ${recoveredSecret}`,
+    string_to_integer(recoveredSecret)
+  );
 }
