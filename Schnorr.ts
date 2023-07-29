@@ -25,11 +25,11 @@ function sign(message: string, x: bigInt.BigInteger) {
 
   console.log("Q: " + Q);
   const r = exponentiationInField(g, k, P);
-  const toHash = r.toString() + message;
+  const toHash = r.toString(16) + message;
   const e = crypto.SHA256(toHash); // ? hash
   const HASH = e.toString();
   const HASH_AS_INT = bigInt(HASH, 16);
-  console.log("HASHASINT : " + HASH_AS_INT);
+  console.log("HASHASINT :" + HASH_AS_INT);
   const xe = multiplyInField(x, HASH_AS_INT, Q);
 
   const s = subtractInField(k, xe, Q);
@@ -49,7 +49,7 @@ function verify(
 
   const rv = multiplyInField(gs, ye, P);
 
-  const rv_to_string = rv.toString() + message;
+  const rv_to_string = rv.toString(16) + message;
   const ev = crypto.SHA256(rv_to_string).toString();
 
   const ev_to_int = bigInt(ev, 16);
@@ -57,7 +57,6 @@ function verify(
   console.log("evt   : " + ev_to_int);
 
   const isequal = ev_to_int.compare(e);
-
   isequal === 0 ? console.log(true) : console.log(false);
   return isequal == 0 ? true : false;
 }
@@ -70,7 +69,7 @@ function getPublicAndPrivate() {
   // ? public key
 
   const [s, e] = sign("hi", x);
-  verify(y, e, s, "hi");
+  verify(y, e, s, "hix");
 
   console.log("public key: " + y);
 }
