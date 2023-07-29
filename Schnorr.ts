@@ -29,7 +29,7 @@ function sign(message: string, x: bigInt.BigInteger) {
   const e = crypto.SHA256(toHash); // ? hash
   const HASH = e.toString();
   const HASH_AS_INT = bigInt(HASH, 16);
-  console.log(HASH_AS_INT + "    HASHASINT");
+  console.log("HASHASINT : " + HASH_AS_INT);
   const xe = multiplyInField(x, HASH_AS_INT, Q);
 
   const s = subtractInField(k, xe, Q);
@@ -54,11 +54,11 @@ function verify(
 
   const ev_to_int = bigInt(ev, 16);
   console.log("e     : " + e);
-  console.log("evtt  :" + ev_to_int);
+  console.log("evt   : " + ev_to_int);
 
   const isequal = ev_to_int.compare(e);
 
-  console.log(isequal);
+  isequal === 0 ? console.log(true) : console.log(false);
   return isequal == 0 ? true : false;
 }
 
