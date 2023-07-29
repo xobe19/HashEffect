@@ -7,31 +7,31 @@ console.log(
 
 let PRIME = bigInt(readline.question("Select the prime: "));
 
-function getFieldValue(n: BigInteger, prime = PRIME) {
+ function getFieldValue(n: BigInteger, prime = PRIME) {
   let val = n.mod(prime);
   if (val.lesser(0)) return val.plus(prime).mod(prime);
   return val;
 }
 
-function multiplyInField(x: BigInteger, y: BigInteger, prime = PRIME) {
+ function multiplyInField(x: BigInteger, y: BigInteger, prime = PRIME) {
   return getFieldValue(x.multiply(y));
 }
 
-function addInField(x: BigInteger, y: BigInteger, prime = PRIME) {
+ function addInField(x: BigInteger, y: BigInteger, prime = PRIME) {
   return getFieldValue(x.add(y));
 }
 
-function divideInField(x: BigInteger, y: BigInteger, prime = PRIME) {
+ function divideInField(x: BigInteger, y: BigInteger, prime = PRIME) {
   let inv = y.modInv(prime);
   return getFieldValue(x.multiply(inv));
 }
 
-function subtractInField(x: BigInteger, y: BigInteger, prime = PRIME) {
+ function subtractInField(x: BigInteger, y: BigInteger, prime = PRIME) {
   let sub = x.subtract(y);
   return getFieldValue(sub);
 }
 
-function exponentiationInField(x: BigInteger, y: BigInteger, prime = PRIME) {
+ function exponentiationInField(x: BigInteger, y: BigInteger, prime = PRIME) {
   return getFieldValue(x.modPow(y, prime));
 }
 
@@ -112,3 +112,6 @@ let pow = bigInt(
 );
 
 console.log(getFieldValue(exponentiationInField(g, pow)));
+
+
+
