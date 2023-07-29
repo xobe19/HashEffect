@@ -7,31 +7,31 @@ console.log(
 
 let PRIME = bigInt(readline.question("Select the prime: "));
 
- function getFieldValue(n: BigInteger, prime = PRIME) {
+function getFieldValue(n: BigInteger, prime = PRIME) {
   let val = n.mod(prime);
   if (val.lesser(0)) return val.plus(prime).mod(prime);
   return val;
 }
 
- function multiplyInField(x: BigInteger, y: BigInteger, prime = PRIME) {
+function multiplyInField(x: BigInteger, y: BigInteger, prime = PRIME) {
   return getFieldValue(x.multiply(y));
 }
 
- function addInField(x: BigInteger, y: BigInteger, prime = PRIME) {
+function addInField(x: BigInteger, y: BigInteger, prime = PRIME) {
   return getFieldValue(x.add(y));
 }
 
- function divideInField(x: BigInteger, y: BigInteger, prime = PRIME) {
+function divideInField(x: BigInteger, y: BigInteger, prime = PRIME) {
   let inv = y.modInv(prime);
   return getFieldValue(x.multiply(inv));
 }
 
- function subtractInField(x: BigInteger, y: BigInteger, prime = PRIME) {
+function subtractInField(x: BigInteger, y: BigInteger, prime = PRIME) {
   let sub = x.subtract(y);
   return getFieldValue(sub);
 }
 
- function exponentiationInField(x: BigInteger, y: BigInteger, prime = PRIME) {
+function exponentiationInField(x: BigInteger, y: BigInteger, prime = PRIME) {
   return getFieldValue(x.modPow(y, prime));
 }
 
@@ -93,6 +93,7 @@ PRIME = bigInt(readline.question("Enter the Prime: "));
 let g = bigInt(readline.question("Select the value of generator (g): "));
 let accum = bigInt(1);
 let field_of_generator = new Set<string>();
+field_of_generator.add(bigInt(1).toString());
 
 while (true) {
   let new_push = accum.multiply(g).mod(PRIME);
@@ -108,10 +109,7 @@ console.log("field set: ", field_of_generator);
 console.log("order: " + field_of_generator.size);
 
 let pow = bigInt(
-  readline.question("Enter a value x to calculate g^x in this group")
+  readline.question("Enter a value x to calculate g^x in this group: ")
 );
 
 console.log(getFieldValue(exponentiationInField(g, pow)));
-
-
-
