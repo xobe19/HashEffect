@@ -1,13 +1,15 @@
 import bigInt, { BigInteger } from "big-integer";
 import readline from "readline-sync";
 
-console.log("Prime Field Operations");
+console.log(
+  "Prime Field Operations ---------------------------------------------------------"
+);
 
-let PRIME = bigInt(readline.question("Select the prime"));
+let PRIME = bigInt(readline.question("Select the prime: "));
 
 function getFieldValue(n: BigInteger, prime = PRIME) {
   let val = n.mod(prime);
-  if (val.lesser(0)) return n.plus(prime).mod(prime);
+  if (val.lesser(0)) return val.plus(prime).mod(prime);
   return val;
 }
 
@@ -22,7 +24,6 @@ function addInField(x: BigInteger, y: BigInteger, prime = PRIME) {
 function divideInField(x: BigInteger, y: BigInteger, prime = PRIME) {
   let inv = y.modInv(prime);
   return getFieldValue(x.multiply(inv));
-
 }
 
 function subtractInField(x: BigInteger, y: BigInteger, prime = PRIME) {
@@ -84,10 +85,12 @@ while (true) {
   if (should_break) break;
 }
 
-console.log("Field Groups");
+console.log(
+  "Field Groups -------------------------------------------------------------------"
+);
 
-PRIME = bigInt(readline.question("Enter the Prime"));
-let g = bigInt(readline.question("Select the value of generator(g)"));
+PRIME = bigInt(readline.question("Enter the Prime: "));
+let g = bigInt(readline.question("Select the value of generator (g): "));
 let accum = bigInt(1);
 let field_of_generator = new Set<string>();
 
