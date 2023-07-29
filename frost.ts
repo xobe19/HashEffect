@@ -225,6 +225,27 @@ class Node {
       `Node ${this.id} computed the overall public key as ${this.group_public_key}`
     );
   }
+
+  compute_public_key_of(l: number) {
+    let overall = bigInt(1);
+    for (let j = 1; j <= n; j++) {
+      let ACC = bigInt(1);
+      for (let k = 0; k <= t - 1; k++) {
+        ACC = multiplyInField(
+          ACC,
+          exponentiationInField(
+            all_commitments[j][k],
+            exponentiationInField(bigInt(l), bigInt(k), Q),
+            P
+          ),
+          P
+        );
+      }
+      overall = multiplyInField(overall, ACC, P);
+    }
+
+    console.log(`Public key of ${l} is ${overall}`);
+  }
 }
 
 function sleep(ms: number) {
@@ -255,4 +276,8 @@ var all_nodes: Node[] = [new Node(1), new Node(2), new Node(3)];
   for (let node of all_nodes) {
     node.compute_overall_public_key();
   }
+
+  await sleep(4000);
+
+  all_nodes[0].compute_public_key_of(2);
 })();
