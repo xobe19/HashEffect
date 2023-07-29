@@ -1,0 +1,186 @@
+{
+	"info": {
+		"_postman_id": "90ea8aca-2fa1-4428-a08c-73641854420e",
+		"name": "Hash Effect",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19280891"
+	},
+	"item": [
+		{
+			"name": "SSS Shares",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://hash-effect.onrender.com/sss/shares",
+					"protocol": "https",
+					"host": [
+						"hash-effect",
+						"onrender",
+						"com"
+					],
+					"path": [
+						"sss",
+						"shares"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "SSS Verify",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"secret\": \"7964530020479313657\",\n    \"shares\": [\n        {\n            \"index\": 1,\n            \"value\": {\n                \"value\": \"69492a18a52355ad\",\n                \"prime\": \"74d153c9bfec9d0f\"\n            }\n        },\n        {\n            \"index\": 2,\n            \"value\": {\n                \"value\": \"19c00922840cd569\",\n                \"prime\": \"74d153c9bfec9d0f\"\n            }\n        },\n        {\n            \"index\": 3,\n            \"value\": {\n                \"value\": \"2af86f02d40cc5e9\",\n                \"prime\": \"74d153c9bfec9d0f\"\n            }\n        },\n        {\n            \"index\": 4,\n            \"value\": {\n                \"value\": \"43e0cb179d34ab43\",\n                \"prime\": \"74d153c9bfec9d0f\"\n            }\n        },\n        {\n            \"index\": 5,\n            \"value\": {\n                \"value\": \"15b9d217d86beddc\",\n                \"prime\": \"74d153c9bfec9d0f\"\n            }\n        },\n        {\n            \"index\": 6,\n            \"value\": {\n                \"value\": \"33106eeed7e41681\",\n                \"prime\": \"74d153c9bfec9d0f\"\n            }\n        },\n        {\n            \"index\": 7,\n            \"value\": {\n                \"value\": \"672b0b7d49e83559\",\n                \"prime\": \"74d153c9bfec9d0f\"\n            }\n        },\n        {\n            \"index\": 8,\n            \"value\": {\n                \"value\": \"1e17772155459646\",\n                \"prime\": \"74d153c9bfec9d0f\"\n            }\n        },\n        {\n            \"index\": 9,\n            \"value\": {\n                \"value\": \"6888173c0f6125a6\",\n                \"prime\": \"74d153c9bfec9d0f\"\n            }\n        },\n        {\n            \"index\": 10,\n            \"value\": {\n                \"value\": \"4e6b25184d2fb484\",\n                \"prime\": \"74d153c9bfec9d0f\"\n            }\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://hash-effect.onrender.com/sss/verify",
+					"protocol": "https",
+					"host": [
+						"hash-effect",
+						"onrender",
+						"com"
+					],
+					"path": [
+						"sss",
+						"verify"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "VSS Share Valid",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://hash-effect.onrender.com/vss/share/valid",
+					"protocol": "http",
+					"host": [
+						"hash-effect",
+						"onrender",
+						"com"
+					],
+					"path": [
+						"vss",
+						"share",
+						"valid"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "VSS Share Invalid",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://hash-effect.onrender.com/vss/share/invalid",
+					"protocol": "https",
+					"host": [
+						"hash-effect",
+						"onrender",
+						"com"
+					],
+					"path": [
+						"vss",
+						"share",
+						"invalid"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "VSS Verify",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"share\": {\n        \"index\": 3,\n        \"value\": {\n            \"value\": \"772a0e4184c0c35e\",\n            \"prime\": \"7f7352ad6721db4d\"\n        }\n    },\n    \"commitments\": [\n        {\n            \"tag\": \"prime\",\n            \"data\": {\n                \"value\": \"71feea941e30a860\",\n                \"prime\": \"fee6a55ace43b69b\"\n            }\n        },\n        {\n            \"tag\": \"prime\",\n            \"data\": {\n                \"value\": \"ac7436967fc6de3a\",\n                \"prime\": \"fee6a55ace43b69b\"\n            }\n        },\n        {\n            \"tag\": \"prime\",\n            \"data\": {\n                \"value\": \"80970f47dce53b9a\",\n                \"prime\": \"fee6a55ace43b69b\"\n            }\n        },\n        {\n            \"tag\": \"prime\",\n            \"data\": {\n                \"value\": \"3de1ac9cd4c4cebf\",\n                \"prime\": \"fee6a55ace43b69b\"\n            }\n        },\n        {\n            \"tag\": \"prime\",\n            \"data\": {\n                \"value\": \"fc49ce60c99dd3ea\",\n                \"prime\": \"fee6a55ace43b69b\"\n            }\n        },\n        {\n            \"tag\": \"prime\",\n            \"data\": {\n                \"value\": \"3726fabea0c5da6e\",\n                \"prime\": \"fee6a55ace43b69b\"\n            }\n        },\n        {\n            \"tag\": \"prime\",\n            \"data\": {\n                \"value\": \"ade699aa899d3c79\",\n                \"prime\": \"fee6a55ace43b69b\"\n            }\n        },\n        {\n            \"tag\": \"prime\",\n            \"data\": {\n                \"value\": \"ef5f4b96b282679a\",\n                \"prime\": \"fee6a55ace43b69b\"\n            }\n        },\n        {\n            \"tag\": \"prime\",\n            \"data\": {\n                \"value\": \"c005a4faa65ae8df\",\n                \"prime\": \"fee6a55ace43b69b\"\n            }\n        },\n        {\n            \"tag\": \"prime\",\n            \"data\": {\n                \"value\": \"82979d46fcc5dd1e\",\n                \"prime\": \"fee6a55ace43b69b\"\n            }\n        }\n    ],\n    \"group\": {\n        \"generator\": {\n            \"tag\": \"prime\",\n            \"data\": {\n                \"value\": \"3\",\n                \"prime\": \"fee6a55ace43b69b\"\n            }\n        },\n        \"p\": \"7f7352ad6721db4d\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://hash-effect.onrender.com/vss/verify",
+					"protocol": "https",
+					"host": [
+						"hash-effect",
+						"onrender",
+						"com"
+					],
+					"path": [
+						"vss",
+						"verify"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Schnorr Sign",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://hash-effect.onrender.com/schnorr/sign",
+					"protocol": "https",
+					"host": [
+						"hash-effect",
+						"onrender",
+						"com"
+					],
+					"path": [
+						"schnorr",
+						"sign"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Schnorr Verification",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"group\": {\n        \"generator\": {\n            \"tag\": \"prime\",\n            \"data\": {\n                \"value\": \"3\",\n                \"prime\": \"d279f5537ea6984b\"\n            }\n        },\n        \"p\": \"693cfaa9bf534c25\"\n    },\n    \"message\": \"Hash Effect!!!\",\n    \"publicKey\": {\n        \"tag\": \"prime\",\n        \"data\": {\n            \"value\": \"a9168b258145f353\",\n            \"prime\": \"d279f5537ea6984b\"\n        }\n    },\n    \"signature\": {\n        \"r\": {\n            \"tag\": \"prime\",\n            \"data\": {\n                \"value\": \"7b8271097331d25f\",\n                \"prime\": \"d279f5537ea6984b\"\n            }\n        },\n        \"sigma\": {\n            \"value\": \"527cfbcbef24c0f6\",\n            \"prime\": \"693cfaa9bf534c25\"\n        }\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://hash-effect.onrender.com/schnorr/verify",
+					"protocol": "https",
+					"host": [
+						"hash-effect",
+						"onrender",
+						"com"
+					],
+					"path": [
+						"schnorr",
+						"verify"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -164,6 +164,7 @@ export function verify_share(
   share: BigInteger[],
   commitments: BigInteger[],
   P: BigInteger,
+  Q: BigInteger,
   g: BigInteger
 ) {
   let i = share[0];
@@ -179,7 +180,7 @@ export function verify_share(
     // console.log("commitment: " + commitments[j]);
     // console.log("term: " + term);
     LHS = multiplyInField(LHS, term, P);
-    pow = pow.multiply(i);
+    pow = multiplyInField(pow, i, Q);
   }
 
   const RHS = exponentiationInField(g, fi, P);
