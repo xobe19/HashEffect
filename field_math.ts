@@ -1,71 +1,105 @@
 import bigInt, { BigInteger } from "big-integer";
+import readline from "readline-sync";
 
-let PRIME = bigInt(2027);
+console.log("Prime Field Operations");
 
-// Field is from 0...2026
+let PRIME = bigInt(readline.question("Select the prime"));
 
-// additon, multiplication, division, subtraction are all closed
-
-let x = bigInt(234);
-
-let y = bigInt(250);
-
-let add = x.plus(y).mod(PRIME);
-
-let mult = x.multiply(y).mod(PRIME);
-
-let div = x.multiply(y.modInv(PRIME)).mod(PRIME);
-
-let sub = x.subtract(y).mod(PRIME);
-
-if (sub.lesser(bigInt(0))) {
-  sub = sub.plus(PRIME).mod(PRIME);
+function getFieldValue(n: BigInteger, prime = PRIME) {
+  let val = n.mod(prime);
+  if (val.lesser(0)) return n.plus(prime).mod(prime);
+  return val;
 }
 
-console.log("addition: " + add);
-
-console.log("multiplication: " + mult);
-
-console.log("division: " + div);
-
-console.log("subtraction: " + sub);
-
-// if we use a non prime number, then divison MAY NOT be possible
-// to find mod inverse (a, m) the gcd(a,m) = 1
-// if it's not true, then mod inverse can't be found, hence division not possible
-
-let COMPOSITE = 2028;
-
-try {
-  //ERROR
-  div = x.multiply(y.modInv(COMPOSITE)).mod(COMPOSITE);
-} catch (err) {
-  console.log("division error");
+function multiplyInField(x: BigInteger, y: BigInteger, prime = PRIME) {
+  return getFieldValue(x.multiply(y));
 }
 
-// GENERATOR FIELDS
+function addInField(x: BigInteger, y: BigInteger, prime = PRIME) {
+  return getFieldValue(x.add(y));
+}
 
-// Two ways to use:
-// modular exponentiation
-// elliptic curves
+function divideInField(x: BigInteger, y: BigInteger, prime = PRIME) {
+  let inv = y.modInv(prime);
+  return getFieldValue(x.multiply(inv));
 
-let g = bigInt(2);
+}
+
+function subtractInField(x: BigInteger, y: BigInteger, prime = PRIME) {
+  let sub = x.subtract(y);
+  return getFieldValue(sub);
+}
+
+function exponentiationInField(x: BigInteger, y: BigInteger, prime = PRIME) {
+  return getFieldValue(x.modPow(y, prime));
+}
+
+console.log("Operations:");
+console.log("1: Get Value in Field");
+console.log("2: Addition in Field");
+console.log("3: Multiplication in Field");
+console.log("4: Subtraction in Field");
+console.log("5: Division in Field");
+console.log("6: Exponentiation in Field");
+console.log("7: Exit");
+
+while (true) {
+  let inp = readline.questionInt("Choose your operation: ");
+  let x: BigInteger, y: BigInteger;
+  let should_break = false;
+  switch (inp) {
+    case 1:
+      x = bigInt(readline.question("Value = "));
+      console.log(getFieldValue(x));
+      break;
+    case 2:
+      x = bigInt(readline.question("Value1 = "));
+      y = bigInt(readline.question("Value2 = "));
+      console.log(addInField(x, y));
+      break;
+    case 3:
+      x = bigInt(readline.question("Value1 = "));
+      y = bigInt(readline.question("Value2 = "));
+      console.log(multiplyInField(x, y));
+      break;
+    case 4:
+      x = bigInt(readline.question("Value1 = "));
+      y = bigInt(readline.question("Value2 = "));
+      console.log(subtractInField(x, y));
+      break;
+    case 5:
+      x = bigInt(readline.question("Value1 = "));
+      y = bigInt(readline.question("Value2 = "));
+      console.log(divideInField(x, y));
+      break;
+    case 6:
+      x = bigInt(readline.question("Value1 = "));
+      y = bigInt(readline.question("Value2 = "));
+      console.log(exponentiationInField(x, y));
+      break;
+    case 7:
+      should_break = true;
+      break;
+  }
+  if (should_break) break;
+}
+
+console.log("Field Groups");
+
+PRIME = bigInt(readline.question("Enter the Prime"));
+let g = bigInt(readline.question("Select the value of generator(g)"));
 let accum = bigInt(1);
 let field_of_generator = new Set<string>();
 
 while (true) {
   let new_push = accum.multiply(g).mod(PRIME);
-  //  console.log(new_push);
   if (field_of_generator.has(new_push.toString())) {
     break;
   }
 
   field_of_generator.add(new_push.toString());
   accum = new_push;
-  // console.log(field_of_generator.size);
 }
 
-console.log("generator(g) = " + g);
-console.log("PRIME = " + PRIME);
 console.log("field set: ", field_of_generator);
 console.log("order: " + field_of_generator.size);
