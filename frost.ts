@@ -7,12 +7,9 @@ import {
 import crypto from "crypto-js";
 import { all } from "axios";
 
-let P = bigInt("23");
-let Q = bigInt("11");
-//const Q = bigInt("7582831921683869813");
-//const P = bigInt("15165663843367739627");
-let g = bigInt(2);
-
+const P = bigInt("15943542169520389343");
+const Q = bigInt("7971771084760194671");
+const g = bigInt("2");
 let t = 2;
 let n = 3;
 
