@@ -1,8 +1,12 @@
 import bigInt, { BigInteger } from "big-integer";
 import readline from "readline-sync";
-import { exponentiationInField } from "./field_math_exports";
+import { exponentiationInField, multiplyInField } from "./field_math_exports";
 
 let PRIME: BigInteger = bigInt(2).pow(127).minus(1);
+let OUT_PRIME: BigInteger = bigInt(2).pow(1024).minus(1);
+console.log(OUT_PRIME.isPrime());
+console.log(PRIME.isPrime());
+
 let g: BigInteger = bigInt(2);
 const SECRET = readline.question("Enter secret: ");
 const SHARES = readline.questionInt("Enter no. of shares: ");
@@ -70,6 +74,7 @@ function VSS(secret: string, n: number, t: number) {
   let number_of_keys = n;
 
   PRIME = choose_prime(number_of_keys, secret_int);
+  console.log("chosen prime: " + PRIME.toString());
 
   let coefficients = generate_random_coefficients(degree);
 
@@ -86,7 +91,7 @@ function VSS(secret: string, n: number, t: number) {
   let commitments = [];
 
   // looping through coefficients to generate commitment for each coefficient
-
+  console.log("coefficient: " + coefficients);
   for (let i = 0; i < coefficients.length; i++) {
     commitments.push(exponentiationInField(g, coefficients[i], PRIME));
   }
@@ -158,6 +163,30 @@ function generate_secret(points: BigInteger[][]) {
   return integer_to_string(integer_secret);
 }
 
+function verify_share(share: BigInteger[], commitments: BigInteger[]) {
+  let i = share[0];
+  let fi = share[1];
+  let LHS = bigInt(1);
+  let pow = bigInt(1);
+
+  for (let j = commitments.length - 1; j >= 0; j--) {
+    let term = exponentiationInField(commitments[j], pow, PRIME);
+
+    console.log("pow: " + pow);
+    console.log("j = " + j);
+    console.log("commitment: " + commitments[j]);
+    console.log("term: " + term);
+    LHS = multiplyInField(LHS, term, PRIME);
+    pow = multiplyInField(pow, i, PRIME);
+  }
+
+  console.log("LHS: " + LHS);
+
+  let RHS = exponentiationInField(g, fi, PRIME);
+
+  console.log("RHS: " + RHS);
+}
+
 //console.log(string_to_integer("my secret"));
 //console.log(choose_prime(999999, string_to_integer("hi how are you")));
 
@@ -170,6 +199,11 @@ for (let point of points) {
 console.log("Commitments:");
 for (let commitment of commitments) {
   console.log(commitment);
+}
+
+for (let i = 0; i < points.length; i++) {
+  console.log(`Verifying Share of User ${i + 1}`);
+  verify_share(points[i], commitments);
 }
 
 let logged = false;
