@@ -2,8 +2,10 @@ import bigInt, { BigInteger } from "big-integer";
 import crypto from "crypto-js";
 import {
   addInField,
+  divideInField,
   exponentiationInField,
   multiplyInField,
+  subtractInField,
 } from "./field_math_exports";
 
 const P = bigInt("15943542169520389343");
@@ -258,6 +260,151 @@ class Node {
 
     preprocess_storage[this.id] = li;
   }
+
+  gen_rho_i(id: BigInteger, m: string, B_arr: Array<BigInteger[]>) {
+    let rho_i_hex = crypto
+      .SHA256(
+        crypto.enc.Hex.parse(
+          id.toString(16) + str_to_hex(m) + str_to_hex(B_arr.toString())
+        )
+      )
+      .toString();
+    let rho_i = bigInt(rho_i_hex, 16).mod(Q);
+    return rho_i;
+  }
+
+  sign_as_SA(message: string) {
+    let S = new Set<number>();
+    S.add(this.id);
+    let required = t - 1;
+    for (let i = 0; i < required; i++) {
+      let randomlySelectedNode = bigInt.randBetween(1, n).toJSNumber();
+      while (S.has(randomlySelectedNode)) {
+        randomlySelectedNode = bigInt.randBetween(1, n).toJSNumber();
+      }
+      S.add(randomlySelectedNode);
+    }
+    console.log(`nodes selected for signing: `);
+    console.log("{");
+    for (let x of S) {
+      console.log(x);
+    }
+
+    console.log("}");
+
+    let k = bigInt(0);
+    let B = new Set<BigInteger[]>();
+    for (let i of S) {
+      let Di = preprocess_storage[i][0][1];
+      let Ei = preprocess_storage[i][1][1];
+
+      B.add([bigInt(i), Di, Ei]);
+    }
+
+    let B_arr = Array.from(B);
+
+    let zis = [];
+
+    for (let i = 0; i < all_nodes.length; i++) {
+      let curr_node = all_nodes[i];
+      if (curr_node.id == this.id) continue;
+
+      let received_zi = curr_node.receiveSignBroadcast(message, B);
+      zis.push(received_zi);
+    }
+
+    console.log(zis);
+
+    for (let i = 0; i < zis.length; i++) {
+      let LHS = exponentiationInField(g, zis[i].zi, P);
+      let RHS = zis[i].commitment_array[i];
+      RHS = exponentiationInField(
+        zis[i].public_key,
+        multiplyInField(zis[i].c, zis[i].lambda_i, Q),
+        P
+      );
+      console.log("LHS: " + LHS);
+      console.log("RHS: " + RHS);
+    }
+  }
+
+  receiveSignBroadcast(m: string, B: Set<BigInteger[]>) {
+    let B_arr = Array.from(B);
+    //   console.log(B_arr.toString());
+    let commitment_array = [];
+    for (let i = 0; i < B_arr.length; i++) {
+      let ID = B_arr[i][0];
+      let di = B_arr[i][1];
+      let ei = B_arr[i][2];
+      let rho_i = this.gen_rho_i(bigInt(ID), m, B_arr);
+      commitment_array.push(
+        multiplyInField(di, exponentiationInField(ei, rho_i, P), P)
+      );
+    }
+
+    let R = bigInt(1);
+
+    for (let i = 0; i < commitment_array.length; i++) {
+      R = multiplyInField(R, commitment_array[i], P);
+    }
+
+    let c_hex = crypto
+      .SHA256(
+        crypto.enc.Hex.parse(
+          R.toString(16) + this.group_public_key.toString(16) + str_to_hex(m)
+        )
+      )
+      .toString();
+
+    let c = bigInt(c_hex, 16);
+    let lambda_i = bigInt(1);
+
+    for (let i = 0; i < B_arr.length; i++) {
+      let j = B_arr[i][0];
+      if (bigInt(j).equals(bigInt(this.id))) continue;
+
+      lambda_i = multiplyInField(lambda_i, j, P);
+      lambda_i = divideInField(
+        lambda_i,
+        subtractInField(j, bigInt(this.id), P),
+        P
+      );
+    }
+
+    let my_di: BigInteger = bigInt(0),
+      my_ei: BigInteger = bigInt(0);
+    for (let i = 0; i < B_arr.length; i++) {
+      if (bigInt(B_arr[i][0]).equals(this.id)) {
+        my_di = B_arr[i][1];
+        my_ei = B_arr[i][2];
+      }
+    }
+
+    let zi = bigInt(0);
+
+    zi = addInField(zi, my_di, P);
+
+    zi = addInField(
+      zi,
+      multiplyInField(my_ei, this.gen_rho_i(bigInt(this.id), m, B_arr), P),
+      P
+    );
+
+    zi = addInField(
+      zi,
+      multiplyInField(lambda_i, multiplyInField(this.signing_share, c, P), P),
+      P
+    );
+
+    return {
+      zi,
+      R,
+      commitment_array,
+      c,
+      lambda_i,
+      public_key: this.public_verification_share,
+    };
+  }
 }
 
 function sleep(ms: number) {
@@ -305,4 +452,6 @@ var all_nodes: Node[] = [new Node(1), new Node(2), new Node(3)];
   for (let i = 1; i <= n; i++) {
     console.log(`Node ${i} preprocessed : ` + preprocess_storage[i]);
   }
+
+  all_nodes[0].sign_as_SA("sample message");
 })();
