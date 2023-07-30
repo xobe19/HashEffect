@@ -13,8 +13,8 @@ const Q = bigInt("7971771084760194671");
 //const P = bigInt("23");
 //const Q = bigInt("11");
 const g = bigInt("2");
-let t = 2;
-let n = 3;
+let t = 3;
+let n = 5;
 let all_commitments: BigInteger[][] = new Array(n + 1).fill([]);
 let preprocess_storage: BigInteger[][][] = new Array(n + 1).fill([]);
 function generate_random_polynomial(t: number) {
@@ -398,7 +398,13 @@ function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-var all_nodes: Node[] = [new Node(1), new Node(2), new Node(3), new Node(4), new Node(5)];
+var all_nodes: Node[] = [
+  new Node(1),
+  new Node(2),
+  new Node(3),
+  new Node(4),
+  new Node(5),
+];
 
 (async function () {
   for (let node of all_nodes) {
