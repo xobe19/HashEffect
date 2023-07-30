@@ -8,8 +8,10 @@ import {
   subtractInField,
 } from "./field_math_exports";
 
-const P = bigInt("15943542169520389343");
-const Q = bigInt("7971771084760194671");
+//const P = bigInt("15943542169520389343");
+//const Q = bigInt("7971771084760194671");
+const P = bigInt("23");
+const Q = bigInt("11");
 const g = bigInt("2");
 let t = 2;
 let n = 3;
@@ -293,12 +295,12 @@ class Node {
     console.log("}");
 
     let k = bigInt(0);
-    let B = new Set<BigInteger[]>();
+    let B = new Array<BigInteger[]>();
     for (let i of S) {
       let Di = preprocess_storage[i][0][1];
       let Ei = preprocess_storage[i][1][1];
 
-      B.add([bigInt(i), Di, Ei]);
+      B.push([bigInt(i), Di, Ei]);
     }
 
     let B_arr = Array.from(B);
@@ -328,8 +330,7 @@ class Node {
     }
   }
 
-  receiveSignBroadcast(m: string, B: Set<BigInteger[]>) {
-    let B_arr = Array.from(B);
+  receiveSignBroadcast(m: string, B_arr: Array<BigInteger[]>) {
     //   console.log(B_arr.toString());
     let commitment_array = [];
     for (let i = 0; i < B_arr.length; i++) {
@@ -356,17 +357,17 @@ class Node {
       )
       .toString();
 
-    let c = bigInt(c_hex, 16);
+    let c = bigInt(c_hex, 16).mod(Q);
     let lambda_i = bigInt(1);
 
     for (let i = 0; i < B_arr.length; i++) {
       let j = B_arr[i][0];
       if (bigInt(j).equals(bigInt(this.id))) continue;
 
-      lambda_i = multiplyInField(lambda_i, j, P);
+      lambda_i = multiplyInField(lambda_i, j, Q);
       lambda_i = divideInField(
         lambda_i,
-        subtractInField(j, bigInt(this.id), P),
+        subtractInField(j, bigInt(this.id), Q),
         P
       );
     }
@@ -382,18 +383,18 @@ class Node {
 
     let zi = bigInt(0);
 
-    zi = addInField(zi, my_di, P);
+    zi = addInField(zi, my_di, Q);
 
     zi = addInField(
       zi,
-      multiplyInField(my_ei, this.gen_rho_i(bigInt(this.id), m, B_arr), P),
-      P
+      multiplyInField(my_ei, this.gen_rho_i(bigInt(this.id), m, B_arr), Q),
+      Q
     );
 
     zi = addInField(
       zi,
-      multiplyInField(lambda_i, multiplyInField(this.signing_share, c, P), P),
-      P
+      multiplyInField(lambda_i, multiplyInField(this.signing_share, c, Q), Q),
+      Q
     );
 
     return {
