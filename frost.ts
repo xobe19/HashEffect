@@ -7,14 +7,15 @@ import {
   multiplyInField,
   subtractInField,
 } from "./field_math_exports";
+import verify from "./schnorr_export";
 
-const P = bigInt("15943542169520389343");
-const Q = bigInt("7971771084760194671");
-//const P = bigInt("23");
-//const Q = bigInt("11");
+//const P = bigInt("15943542169520389343");
+//const Q = bigInt("7971771084760194671");
+const P = bigInt("23");
+const Q = bigInt("11");
 const g = bigInt("2");
-let t = 3;
-let n = 5;
+let t = 2;
+let n = 3;
 let all_commitments: BigInteger[][] = new Array(n + 1).fill([]);
 let preprocess_storage: BigInteger[][][] = new Array(n + 1).fill([]);
 function generate_random_polynomial(t: number) {
@@ -306,18 +307,21 @@ class Node {
     let R = bigInt(0);
     for (let i = 0; i < all_nodes.length; i++) {
       let curr_node = all_nodes[i];
-      if (curr_node.id == this.id) continue;
+      //    if (curr_node.id == this.id) continue;
       if (S.has(curr_node.id) == false) continue;
 
       let obj = curr_node.receiveSignBroadcast(message, B, curr_node.id);
 
       let zi = obj.zi;
-      z = z.plus(zi).mod(Q);
+      z = z.plus(zi);
       R = obj.R;
       let Ri = obj.Ri;
       let Yi = obj.pub_key;
-      let c = obj.c;
-      let lambda_i = obj.lambda_i;
+      let c = obj.c.mod(Q);
+      console.log("frost C : " + c);
+      let lambda_i = obj.lambda_i.mod(Q);
+
+      console.log("lmabda: " + lambda_i.mod(Q));
 
       let LHS = exponentiationInField(g, zi, P);
       let RHS = multiplyInField(
@@ -335,6 +339,8 @@ class Node {
 
     console.log("z = " + z);
     console.log("R = " + R);
+
+    verify(this.group_public_key, z, R, P, g, Q, message);
   }
 
   receiveSignBroadcast(m: string, B_arr: Array<BigInteger[]>, l: number) {
@@ -413,8 +419,8 @@ var all_nodes: Node[] = [
   new Node(1),
   new Node(2),
   new Node(3),
-  new Node(4),
-  new Node(5),
+  // new Node(4),
+  // new Node(5),
 ];
 
 (async function () {
@@ -457,5 +463,5 @@ var all_nodes: Node[] = [
     console.log(`Node ${i} preprocessed : ` + preprocess_storage[i]);
   }
 
-  all_nodes[0].sign_as_SA("sample message");
+  all_nodes[0].sign_as_SA("hi");
 })();
