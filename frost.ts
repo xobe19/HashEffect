@@ -305,6 +305,7 @@ class Node {
     for (let i = 0; i < all_nodes.length; i++) {
       let curr_node = all_nodes[i];
       if (curr_node.id == this.id) continue;
+      if (S.has(curr_node.id) == false) continue;
 
       let obj = curr_node.receiveSignBroadcast(message, B, curr_node.id);
 
@@ -397,7 +398,7 @@ function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-var all_nodes: Node[] = [new Node(1), new Node(2), new Node(3)];
+var all_nodes: Node[] = [new Node(1), new Node(2), new Node(3), new Node(4), new Node(5)];
 
 (async function () {
   for (let node of all_nodes) {
