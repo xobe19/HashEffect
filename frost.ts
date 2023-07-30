@@ -8,10 +8,10 @@ import {
   subtractInField,
 } from "./field_math_exports";
 
-//const P = bigInt("15943542169520389343");
-//const Q = bigInt("7971771084760194671");
-const P = bigInt("23");
-const Q = bigInt("11");
+const P = bigInt("15943542169520389343");
+const Q = bigInt("7971771084760194671");
+//const P = bigInt("23");
+//const Q = bigInt("11");
 const g = bigInt("2");
 let t = 2;
 let n = 3;
@@ -263,17 +263,17 @@ class Node {
     preprocess_storage[this.id] = li;
   }
 
-  gen_rho_i(id: BigInteger, m: string, B_arr: Array<BigInteger[]>) {
-    let rho_i_hex = crypto
-      .SHA256(
-        crypto.enc.Hex.parse(
-          id.toString(16) + str_to_hex(m) + str_to_hex(B_arr.toString())
-        )
-      )
-      .toString();
-    let rho_i = bigInt(rho_i_hex, 16).mod(Q);
-    return rho_i;
-  }
+  // gen_rho_i(id: BigInteger, m: string, B_arr: Array<BigInteger[]>) {
+  //   let rho_i_hex = crypto
+  //     .SHA256(
+  //       crypto.enc.Hex.parse(
+  //         id.toString(16) + str_to_hex(m) + str_to_hex(B_arr.toString())
+  //       )
+  //     )
+  //     .toString();
+  //   let rho_i = bigInt(rho_i_hex, 16).mod(Q);
+  //   return rho_i;
+  // }
 
   sign_as_SA(message: string) {
     let S = new Set<number>();
@@ -293,60 +293,66 @@ class Node {
     }
 
     console.log("}");
-
-    let k = bigInt(0);
-    let B = new Array<BigInteger[]>();
-    for (let i of S) {
-      let Di = preprocess_storage[i][0][1];
-      let Ei = preprocess_storage[i][1][1];
-
-      B.push([bigInt(i), Di, Ei]);
+    let B = [];
+    for (let id of S) {
+      B.push([
+        bigInt(id),
+        preprocess_storage[id][0][1],
+        preprocess_storage[id][1][1],
+      ]);
     }
-
-    let B_arr = Array.from(B);
-
-    let zis = [];
 
     for (let i = 0; i < all_nodes.length; i++) {
       let curr_node = all_nodes[i];
       if (curr_node.id == this.id) continue;
 
-      let received_zi = curr_node.receiveSignBroadcast(message, B);
-      zis.push(received_zi);
-    }
+      let obj = curr_node.receiveSignBroadcast(message, B, curr_node.id);
 
-    console.log(zis);
+      let zi = obj.zi;
+      let Ri = obj.Ri;
+      let Yi = obj.pub_key;
+      let c = obj.c;
+      let lambda_i = obj.lambda_i;
 
-    for (let i = 0; i < zis.length; i++) {
-      let LHS = exponentiationInField(g, zis[i].zi, P);
-      let RHS = zis[i].commitment_array[i];
-      RHS = exponentiationInField(
-        zis[i].public_key,
-        multiplyInField(zis[i].c, zis[i].lambda_i, Q),
+      let LHS = exponentiationInField(g, zi, P);
+      let RHS = multiplyInField(
+        Ri,
+        exponentiationInField(Yi, multiplyInField(c, lambda_i, Q), P),
         P
       );
-      console.log("LHS: " + LHS);
-      console.log("RHS: " + RHS);
+
+      console.log(RHS.equals(LHS) ? 1 : 0);
     }
   }
 
-  receiveSignBroadcast(m: string, B_arr: Array<BigInteger[]>) {
-    //   console.log(B_arr.toString());
-    let commitment_array = [];
+  receiveSignBroadcast(m: string, B_arr: Array<BigInteger[]>, l: number) {
+    let R = bigInt(1);
+    let Ri = bigInt(0);
+    let ei = preprocess_storage[this.id][1][0];
+    let di = preprocess_storage[this.id][0][0];
+    let rho_i = bigInt(0);
     for (let i = 0; i < B_arr.length; i++) {
       let ID = B_arr[i][0];
-      let di = B_arr[i][1];
-      let ei = B_arr[i][2];
-      let rho_i = this.gen_rho_i(bigInt(ID), m, B_arr);
-      commitment_array.push(
-        multiplyInField(di, exponentiationInField(ei, rho_i, P), P)
-      );
-    }
+      let Dl = B_arr[i][1];
+      let El = B_arr[i][2];
+      let b_arr_str = "";
+      let flatted = B_arr.flat();
+      for (let i = 0; i < flatted.length; i++)
+        b_arr_str += flatted[i].toString(16);
+      let rho_l_hex = crypto
+        .SHA256(
+          crypto.enc.Hex.parse(ID.toString(16) + str_to_hex(m) + b_arr_str)
+        )
+        .toString();
+      let rho_l = bigInt(rho_l_hex, 16).mod(Q);
 
-    let R = bigInt(1);
-
-    for (let i = 0; i < commitment_array.length; i++) {
-      R = multiplyInField(R, commitment_array[i], P);
+      let to_mul = bigInt(Dl);
+      to_mul = multiplyInField(to_mul, exponentiationInField(El, rho_l, P), P);
+      if (ID.equals(this.id)) {
+        Ri = to_mul;
+        rho_i = rho_l;
+      }
+      R = multiplyInField(R, to_mul, P);
     }
 
     let c_hex = crypto
@@ -357,54 +363,33 @@ class Node {
       )
       .toString();
 
-    let c = bigInt(c_hex, 16).mod(Q);
+    let c = bigInt(c_hex, 16);
+
     let lambda_i = bigInt(1);
 
     for (let i = 0; i < B_arr.length; i++) {
-      let j = B_arr[i][0];
-      if (bigInt(j).equals(bigInt(this.id))) continue;
+      let ID = B_arr[i][0];
+      if (ID.equals(bigInt(this.id))) continue;
 
-      lambda_i = multiplyInField(lambda_i, j, Q);
+      lambda_i = multiplyInField(lambda_i, ID, Q);
       lambda_i = divideInField(
         lambda_i,
-        subtractInField(j, bigInt(this.id), Q),
-        P
+        subtractInField(ID, bigInt(this.id), Q),
+        Q
       );
-    }
-
-    let my_di: BigInteger = bigInt(0),
-      my_ei: BigInteger = bigInt(0);
-    for (let i = 0; i < B_arr.length; i++) {
-      if (bigInt(B_arr[i][0]).equals(this.id)) {
-        my_di = B_arr[i][1];
-        my_ei = B_arr[i][2];
-      }
     }
 
     let zi = bigInt(0);
 
-    zi = addInField(zi, my_di, Q);
-
-    zi = addInField(
-      zi,
-      multiplyInField(my_ei, this.gen_rho_i(bigInt(this.id), m, B_arr), Q),
-      Q
-    );
-
+    zi = addInField(zi, di, Q);
+    zi = addInField(zi, multiplyInField(ei, rho_i, Q), Q);
     zi = addInField(
       zi,
       multiplyInField(lambda_i, multiplyInField(this.signing_share, c, Q), Q),
       Q
     );
 
-    return {
-      zi,
-      R,
-      commitment_array,
-      c,
-      lambda_i,
-      public_key: this.public_verification_share,
-    };
+    return { zi, c, Ri, R, lambda_i, pub_key: this.public_verification_share };
   }
 }
 
