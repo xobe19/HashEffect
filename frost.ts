@@ -302,6 +302,8 @@ class Node {
       ]);
     }
 
+    let z = bigInt(0);
+    let R = bigInt(0);
     for (let i = 0; i < all_nodes.length; i++) {
       let curr_node = all_nodes[i];
       if (curr_node.id == this.id) continue;
@@ -310,6 +312,8 @@ class Node {
       let obj = curr_node.receiveSignBroadcast(message, B, curr_node.id);
 
       let zi = obj.zi;
+      z = z.plus(zi).mod(Q);
+      R = obj.R;
       let Ri = obj.Ri;
       let Yi = obj.pub_key;
       let c = obj.c;
@@ -322,8 +326,15 @@ class Node {
         P
       );
 
-      console.log(RHS.equals(LHS) ? 1 : 0);
+      console.log(
+        RHS.equals(LHS)
+          ? `SA verified the Zi from ${curr_node.id}`
+          : `Zi verification failed for ${curr_node.id}`
+      );
     }
+
+    console.log("z = " + z);
+    console.log("R = " + R);
   }
 
   receiveSignBroadcast(m: string, B_arr: Array<BigInteger[]>, l: number) {
